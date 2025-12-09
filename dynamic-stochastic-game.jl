@@ -3,6 +3,10 @@
 ##############################################################
 using Random, LinearAlgebra, Distributions, Optim, Plots
 
+cd("D:/Fall-2025-Courses/IO/Research-Proposal")
+
+
+
 ##############################################################
 # STRUCTURES
 ##############################################################
@@ -83,13 +87,13 @@ end
 # SHOCKS & MARKOV MATRIX
 ##############################################################
 alphas = [100, 110, 90]
-upsilons = [1.0, 0.9, 1.1]
-taus     = [1.0, 1.0, 0.5]
+upsilons = [1.0, 1.0, 1.0]
+taus     = [0.5, 1.0, 0.1]
 
 P = [
-    0.80 0.15 0.05;
-    0.20 0.60 0.20;
-    0.10 0.20 0.70
+    0.7 0.2 0.1;
+    0.10 0.60 0.3;
+    0.25 0 0.75
 ]
 
 function draw_next_shock(current_s)
@@ -169,7 +173,7 @@ end
 ##############################################################
 # PLOT: BRAND, PRICES, MARKET SHARE
 ##############################################################
-function plot_BPM(T, B1, B2, p1, p2; filename="brands_prices.pdf")
+function plot_BP(T, B1, B2, p1, p2; filename="brands_prices.pdf")
     t = 1:T
     plt = plot(layout=(1,2), size=(1200,500))  # 1 row, 2 columns
 
@@ -193,15 +197,48 @@ function plot_BPM(T, B1, B2, p1, p2; filename="brands_prices.pdf")
 end
 
 # Call it
-plot_BPM(T, B1, B2, p1, p2; filename="brands_prices.pdf")
+T = 20
+B1,B2,q1,q2,I1,I2,p1,p2,shock =
+    simulate(T, 0.75, 0.25, 1.0, 0.3, shock_policies)
+
+plot_BP(T, B1, B2, p1, p2; filename="brands_prices.pdf")
+
 
 
 ##############################################################
 # MAIN
 ##############################################################
+
+
+
+
+
+
+
+function plot_BR(T, B1, B2; filename="brands-diff.pdf")
+    t = 1:T
+    plt = plot(layout=(1,1), size=(1200,500))  # 1 row, 2 columns
+
+    # --- Brands subplot ---
+    plot!(plt[1], t, B1-B2, lw=3, label="", color=:blue)
+    title!(plt[1], "Relative Brand Power: LVMH")
+    xlabel!(plt[1], "Time")
+    ylabel!(plt[1], "Relative Brand Power: LVMH")
+
+    
+
+    # Display and save as PDF
+    display(plt)
+    savefig(plt, filename)
+end
+
+
+
 T = 20
 B1,B2,q1,q2,I1,I2,p1,p2,shock =
     simulate(T, 0.75, 0.25, 1.0, 0.3, shock_policies)
 
 
-plot_BPM(T, B1, B2, p1, p2; filename="brands_prices.pdf")
+
+plot_BR(T, B1, B2; filename="brands-diff.pdf")
+
